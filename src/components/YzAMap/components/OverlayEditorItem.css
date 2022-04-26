@@ -1,0 +1,53 @@
+.yz-amap-overlay-editor {
+  border-radius: 3px;
+  background-color: white;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+  padding: 4px;
+  max-width: 160px;
+}
+
+.yz-amap-overlay-editor-item span[role='img']:hover {
+  color: #2eb3b2;
+}
+
+.yz-amap-overlay-editor-item,
+.yz-amap-overlay-editor-item-active {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.yz-amap-overlay-editor-item:hover {
+  background-color: whitesmoke;
+}
+
+.yz-amap-overlay-editor-item-active:hover {
+  background-color: #2edf87;
+}
+
+.yz-amap-overlay-editor-item-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.yz-amap-overlay-editor-item-action {
+  display: flex;
+}
+
+.yz-amap-overlay-editor-item-action > div {
+  display: flex;
+  align-items: center;
+}
+
+.yz-amap-overlay-editor-item-action > div > img {
+  height: 14px;
+  width: 14px;
+}

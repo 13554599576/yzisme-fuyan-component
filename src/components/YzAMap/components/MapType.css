@@ -1,0 +1,56 @@
+@keyframes yz-amap-map-type-gone {
+  from {
+    width: 292px;
+  }
+  to {
+    width: 94px;
+  }
+}
+
+.yz-amap-map-type-final,
+.yz-amap-map-type {
+  background-color: white;
+  padding: 4px;
+  display: flex;
+  gap: 4px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.yz-amap-map-type-final {
+  width: 94px;
+}
+
+.yz-amap-map-type {
+  width: 292px;
+  animation-name: yz-amap-map-type-gone;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes yz-amap-map-type-hover {
+  from {
+    width: 94px;
+  }
+  to {
+    width: 292px;
+  }
+}
+.yz-amap-map-type:hover {
+  animation-name: yz-amap-map-type-hover;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+}
+
+.yz-amap-map-type .item,
+.yz-amap-map-type-final .item {
+  width: 92px;
+  height: 56px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.yz-amap-map-type .item:hover {
+  border: 1px solid #1da57a;
+  opacity: 0.8;
+}

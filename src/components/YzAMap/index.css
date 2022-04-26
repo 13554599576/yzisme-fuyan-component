@@ -1,0 +1,36 @@
+.yz-amap-container {
+  position: relative;
+}
+
+.yz-amap-container > .yz-amap-left-top {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 8px;
+}
+.yz-amap-container > .yz-amap-right-top {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 8px;
+}
+.yz-amap-container > .yz-amap-left-bottom {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 8px;
+}
+.yz-amap-container > .yz-amap-right-bottom {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 8px;
+}
+
+#yz-amap-tip-message {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 14px;
+  padding: 4px 6px;
+  white-space: nowrap;
+}
