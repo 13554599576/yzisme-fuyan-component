@@ -14,20 +14,40 @@ class YzAMapUtils {
   static Loca = Loca;
 
   /**
-   * 创建3d热力图
-   * @param map
+   * 默认3d热力图layer配置
+   */
+  static default3dLayerOptions = {
+    zIndex: 10,
+    opacity: 1,
+    visible: true,
+    zooms: [2, 30],
+  };
+
+  /**
+   * 默认的3d热力图配置
+   */
+  static default3dOptions = {
+    radius: 1200,
+    unit: 'meter',
+    value: (_: any, feature: any) => {
+      return feature.properties.count;
+    },
+    gradient: {
+      0.1: '#2A85B8',
+      0.5: 'blue',
+      0.65: 'rgb(117,211,248)',
+      0.7: 'rgb(0, 255, 0)',
+      0.9: '#ffea00',
+      1.0: 'red',
+    },
+  };
+
+  /**
+   * 创建3d热力图数据源
    * @param heatMapDataList
    * @returns
    */
-  static create3dHeatMap = (
-    map: any,
-    heatMapDataList: any,
-    options = {},
-    layerOptions = {}
-  ) => {
-    const loca = new Loca.Container({
-      map,
-    });
+  static createGeoJSONSource = (heatMapDataList: any = []) => {
     const data = {
       type: 'FeatureCollection',
       features: heatMapDataList.map((v: any) => {
@@ -44,33 +64,59 @@ class YzAMapUtils {
       }),
     };
 
-    const geo = new Loca.GeoJSONSource({
+    return new Loca.GeoJSONSource({
       data,
     });
+  };
+
+  /**
+   * 创建layer
+   * @param layerOptions
+   * @param options
+   * @param geo
+   * @returns
+   */
+  static create3dHeatMapLayer = (layerOptions: any, options: any, geo: any) => {
+    const heatMapLayer = new Loca.HeatMapLayer(
+      layerOptions || YzAMapUtils.default3dLayerOptions
+    );
+
+    heatMapLayer.setSource(
+      geo ||
+        new Loca.GeoJSONSource({
+          data: [],
+        }),
+      options || YzAMapUtils.default3dOptions
+    );
+    return heatMapLayer;
+  };
+
+  /**
+   * 创建3d热力图
+   * @param map
+   * @param heatMapDataList
+   * @returns
+   */
+  static create3dHeatMap = (
+    map: any,
+    heatMapDataList: any,
+    options = {},
+    layerOptions = {}
+  ) => {
+    const loca = new Loca.Container({
+      map,
+    });
+
+    const geo = YzAMapUtils.createGeoJSONSource(heatMapDataList);
 
     const heatMapLayer = new Loca.HeatMapLayer({
       loca,
-      zIndex: 10,
-      opacity: 1,
-      visible: true,
-      zooms: [2, 30],
+      ...YzAMapUtils.default3dLayerOptions,
       ...layerOptions,
     });
 
     const newOptions = {
-      radius: 1200,
-      unit: 'meter',
-      value: (_: any, feature: any) => {
-        return feature.properties.count;
-      },
-      gradient: {
-        0.1: '#2A85B8',
-        0.5: 'blue',
-        0.65: 'rgb(117,211,248)',
-        0.7: 'rgb(0, 255, 0)',
-        0.9: '#ffea00',
-        1.0: 'red',
-      },
+      ...YzAMapUtils.default3dOptions,
       ...(options || {}),
     };
 
@@ -216,11 +262,6 @@ class YzAMapUtils {
     gy = gy / area;
     return new AMap.LngLat(gy, gx);
   };
-
-  /**
-   * 是否在城市范围内
-   */
-  static isInCity = code => {};
 }
 
 export default YzAMapUtils;

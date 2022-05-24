@@ -17,12 +17,6 @@ const App = () => {
 
   const ref = useRef<YzAMapRef>(null);
 
-  useEffect(() => {
-    setInterval(() => {
-      console.log(ref);
-    }, 1000);
-  }, []);
-
   return (
     <div
       style={{
@@ -35,7 +29,7 @@ const App = () => {
     >
       <YzAMap
         ref={ref}
-        style={{ width: 500, height: 500 }}
+        style={{ width: '100%', height: '100%' }}
         draw={draw}
         onCreate={({ map, tipMessageText }) => {
           mapRef.current = map;
@@ -44,13 +38,6 @@ const App = () => {
         }}
         rightTop={
           <>
-            <button
-              onClick={() => {
-                console.log(tipMessageTextRef.current?.getText());
-              }}
-            >
-              得到text
-            </button>
             <button onClick={() => setDraw(true)}>开启绘制</button>
             {firstInitOver && (
               <YzAMap.OverlayEditor
@@ -90,6 +77,7 @@ const App = () => {
             setDraw(false);
           });
         }}
+        onDrawCancel={() => setDraw(false)}
       />
     </div>
   );

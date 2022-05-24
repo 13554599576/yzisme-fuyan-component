@@ -4,6 +4,7 @@ import React, {
   useState,
   useImperativeHandle,
   forwardRef,
+  useCallback,
 } from 'react';
 import './index.css';
 import AddAndRemoveBtn from './components/AddAndRemoveBtn';
@@ -194,8 +195,8 @@ const YzAMap: YzAMapComponent = forwardRef(
     const map = useRef<AMap.Map>(); // map实例
 
     const tipMessageTextRef = useRef<AMap.Text>(); // 提示信息AMap.Text
-    // TODO: 等待高德开发工程师解惑
-    // const tip = useRef<string>() // 记录当前提示信息的内容。(因为setText方式是异步的，getText无法得到最新的值)
+    // TODO: 高德地图bug，tipMessageTextRef.current?.getText() 无法获取到最新的 text, 此处使用常量保存
+    const tipMessageStrRef = useRef<string>();
 
     const mouseToolRef = useRef<any>(); // 鼠标工具实例
     const addAndRemoveMarkerRef = useRef<AMap.Marker>(); // 保存和删除按钮的mark
@@ -212,16 +213,25 @@ const YzAMap: YzAMapComponent = forwardRef(
 
     // const [drawedPolygonList, setDrawedPolygonList] = useState<any[]>([]); // 记录当前通过绘制生成的板块
 
+    /**
+     * 改变提示信息
+     * @param str
+     */
+    const changeTipMessageText = (str: string) => {
+      tipMessageTextRef.current?.setText(str);
+      tipMessageStrRef.current = str;
+    };
+
     // 校验多边形合法性(不可有交点)
-    const checkPolygon = (pointData: AMap.LngLat[]) => {
+    const checkPolygon = useCallback((pointData: AMap.LngLat[]) => {
       const check = YzAMapUtils.isPolygon(pointData);
       if (!check) {
-        tipMessageTextRef.current?.setText(
-          `存在相交线段，多边形不合法\n${tipMessageTextRef.current.getText()}`
+        changeTipMessageText(
+          `存在相交线段，多边形不合法\n${tipMessageStrRef.current}`
         );
       }
       return check;
-    };
+    }, []);
 
     /**
      * 板块绘制完毕时，添加按钮事件
@@ -375,6 +385,7 @@ const YzAMap: YzAMapComponent = forwardRef(
         const keydown = (e: any) => {
           if (e.key === 'Escape' && onDrawCancelRef.current) {
             onDrawCancelRef.current();
+            changeTipMessageText(tipMessage);
           }
         };
         document.addEventListener('keydown', keydown);
@@ -385,7 +396,7 @@ const YzAMap: YzAMapComponent = forwardRef(
       }
 
       return () => {};
-    }, [openEscCancel]);
+    }, [openEscCancel, tipMessage]);
 
     /**
      * 鼠标移动时改变tipMessageTextRef的位置
@@ -394,6 +405,11 @@ const YzAMap: YzAMapComponent = forwardRef(
       // 鼠标移动时，改变text位置
       const mousemove = (e: any) => {
         tipMessageTextRef.current?.setPosition(e.lnglat);
+        if (tipMessageStrRef.current) {
+          tipMessageTextRef.current?.show();
+        } else {
+          tipMessageTextRef.current?.hide();
+        }
       };
       // 鼠标移出地图时，隐藏此text
       const mouseout = () => {
@@ -401,7 +417,11 @@ const YzAMap: YzAMapComponent = forwardRef(
       };
       // 鼠标移入地图时，展示text
       const mouseover = () => {
-        tipMessageTextRef.current?.show();
+        if (tipMessageStrRef.current) {
+          tipMessageTextRef.current?.show();
+        } else {
+          tipMessageTextRef.current?.hide();
+        }
       };
       map.current?.on('mousemove', mousemove);
       map.current?.on('mouseout', mouseout);
@@ -421,13 +441,13 @@ const YzAMap: YzAMapComponent = forwardRef(
     useEffect(() => {
       switch (status) {
         case Status.NORMAL:
-          tipMessageTextRef.current?.setText(tipMessage);
+          changeTipMessageText(tipMessage);
           break;
         case Status.DRAW:
-          tipMessageTextRef.current?.setText(drawTipMessage);
+          changeTipMessageText(drawTipMessage);
           break;
         case Status.EDIT:
-          tipMessageTextRef.current?.setText(editTipMessage);
+          changeTipMessageText(editTipMessage);
           break;
 
         default:
@@ -593,14 +613,14 @@ const YzAMap: YzAMapComponent = forwardRef(
       }
 
       return () => {};
-    }, [draw, drawType]);
+    }, [checkPolygon, draw, drawType]);
 
     /**
      * 绘制圆
      */
     useEffect(() => {
       if (drawType === 'circle' && draw) {
-        tipMessageTextRef.current?.setText('点击选择中心点');
+        changeTipMessageText('点击选择中心点');
         map.current?.setStatus({
           doubleClickZoom: false,
         });
@@ -642,9 +662,7 @@ const YzAMap: YzAMapComponent = forwardRef(
           circleEditorRef.current.setTarget(circleRef.current);
           circleEditorRef.current.open();
           removeEditorLisenter = addAllEditorListener();
-          tipMessageTextRef.current?.setText(
-            '拖动中心点进行移动\n拖动边缘点缩放半径'
-          );
+          changeTipMessageText('拖动中心点进行移动\n拖动边缘点缩放半径');
         };
         const click = (e: any) => {
           circleRef.current = new AMap.Circle({

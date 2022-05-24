@@ -102,3 +102,11 @@ YzAMap 向外暴露 polygon 实例
 ## 1.4.18
 
 YzAMap 关闭绘制时清空编辑插件的 target
+
+## 1.4.19
+
+YzAMapUtils 新增额外方法
+
+## 1.4.21
+
+YzAMap 修复显示一个小黑框的问题
